@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# R/M Field Archive
 
-## Getting Started
+Laboratorio 10 de Desarrollo de Aplicaciones Web Avanzado. Archivo de personajes de Rick and Morty con Next.js App Router, TypeScript, React y Tailwind CSS. Incluye el ejercicio de Pokédex en `/pokemon`.
 
-First, run the development server:
+## Ejecución
 
-```bash
+```powershell
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre http://localhost:3000. La API pública no requiere credenciales.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Funcionalidades
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Listado inicial generado en el servidor y almacenado en caché.
+- Búsqueda CSR por nombre, estado, tipo, género y especie, con paginación, cancelación de solicitudes y espera de 350 ms al escribir.
+- Fichas por identificador con todos los campos del personaje: identidad, imagen, estado, especie, tipo, género, origen, ubicación, episodios, URL y fecha de creación.
+- Datos relacionados: dimensión, tipo y residentes registrados de las ubicaciones; código, título y fecha de emisión de cada episodio.
+- Imágenes con carga bajo demanda; vistas de error, reintento y personaje inexistente.
+- Tema claro con esquinas rectas y estilos adaptables a móvil.
 
-## Learn More
+## Renderizado y caché
 
-To learn more about Next.js, take a look at the following resources:
+La portada consulta desde un componente de servidor usando `cache: 'force-cache'`. Se prerenderiza durante el build (SSG), por lo que no realiza una consulta al proveedor en cada visita. La búsqueda interactiva usa `useState` y `useEffect` en el navegador para consultar filtros sin recargar la página.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`generateStaticParams` recorre todas las páginas de la API y genera `/characters/[id]` para cada personaje disponible. Las fichas y las consultas del servidor usan ISR de **864000 segundos (10 días)**. Tras ese plazo, nuevas solicitudes pueden provocar la revalidación; no se ejecuta una actualización programada. Los nuevos personajes requieren un nuevo build para incorporarse a los parámetros generados, aunque una ruta nueva puede generarse bajo demanda.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Las fichas mantienen enlaces a los recursos originales. Una dimensión desconocida o un tipo vacío se presentan según los datos del proveedor, sin inventar información.
 
-## Deploy on Vercel
+## Organización
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Ubicación | Responsabilidad |
+| --- | --- |
+| `src/types/character.ts` | Tipos de personajes, episodios y ubicaciones |
+| `src/lib/characters.ts` | Consultas del servidor y caché |
+| `src/components/characters/` | Tarjetas y búsqueda interactiva |
+| `src/app/characters/[id]/` | Fichas estáticas y Not Found |
+| `src/app/archive.css` | Diseño del archivo |
+| `src/app/pokemon/` | Pokédex, ISR diario y demostraciones de errores |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Verificación y producción
+
+```powershell
+npm run lint
+npx tsc --noEmit
+npm run build
+npm start
+```
+
+Detén `npm run dev` o `npm start` antes de reconstruir el mismo directorio. El build necesita acceso a la API para generar todas las fichas. Para comprobar la tarea, captura la portada, filtros combinados, ficha con episodios y tabla de rutas del build.
+
+Para Vercel, importa `C5-PHO/DAWA-S10`, selecciona Next.js y deja la raíz del proyecto en `./`. No se requieren variables de entorno para estas APIs públicas.
+
+## Referencias
+
+- [Rick and Morty API](https://rickandmortyapi.com/documentation)
+- [generateStaticParams](https://nextjs.org/docs/app/api-reference/functions/generate-static-params)
