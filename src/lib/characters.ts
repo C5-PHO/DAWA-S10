@@ -13,11 +13,21 @@ async function fetchWithRetry(url: string, options: RequestInit & { next?: { rev
   let failure: unknown;
   for (let attempt = 0; attempt < 4; attempt++) {
     try {
-      const response = await fetch(url, { ...options, signal: AbortSignal.timeout(20000) });
-      if (response.status !== 429 && response.status < 500) return response;
+      // Un reintento debe consultar al proveedor, no reutilizar una respuesta fallida.
+      const requestUrl = new URL(url);
+      if (attempt > 0) requestUrl.searchParams.set("_retry", String(attempt));
+      const response = await fetch(requestUrl, { ...options, signal: AbortSignal.timeout(20000) });
+      if (response.ok) return response;
+      // Solo reintenta fallos temporales; una denegación de acceso no se elude.
+      if (response.status !== 429 && response.status < 500) {
+        throw new Error(`Rick and Morty API: HTTP ${response.status} en ${new URL(url).pathname}${new URL(url).search}.`);
+      }
       failure = new Error(`El proveedor respondió HTTP ${response.status}.`);
       if (attempt === 3) return response;
-    } catch (error) { failure = error; }
+    } catch (error) {
+      failure = error;
+      if (error instanceof Error && error.message.startsWith("Rick and Morty API: HTTP")) throw error;
+    }
     if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
   }
   throw failure instanceof Error ? failure : new Error("El proveedor no respondió.");
@@ -29,7 +39,7 @@ export async function getCharacterPage(page = 1): Promise<CharacterResponse> {
     next: { revalidate: TEN_DAYS },
   });
   if (!response.ok)
-    throw new Error("No se pudo cargar el archivo de personajes.");
+    throw new Error(`No se pudo cargar la página ${page} de personajes (HTTP ${response.status}).`);
   return response.json();
 }
 
