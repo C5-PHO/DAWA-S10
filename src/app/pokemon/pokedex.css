@@ -53,3 +53,23 @@
   .pokedex-status-page { padding: 45px 24px; }.pokedex-status-title { letter-spacing: -1px; }
 }
 @media(prefers-reduced-motion:reduce) { .pokedex-card { transition: none; } }
+.dex-back { display: inline-block; font-size: 12px; color: var(--dex-muted); padding-bottom: 5px; border-bottom: 1px solid var(--dex-line); }
+.dex-back:hover { color: var(--dex-accent); }
+.dex-detail-heading { margin-top: 35px; }
+.dex-detail-id { font-size: 30px; color: var(--dex-muted); font-family: var(--font-geist-mono), monospace; }
+.dex-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 65px; align-items: start; }
+.dex-detail-artwork { display: flex; align-items: center; justify-content: center; background: #eeeee6; padding: 35px; min-height: 360px; }
+.dex-detail-data section + section { margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--dex-line); }
+.dex-detail-data h2 { font-size: 18px; font-weight: 650; margin-bottom: 18px; }
+.dex-types { display: flex; flex-wrap: wrap; gap: 10px; }
+.dex-types li { background: #e9e9df; padding: 8px 15px; font-size: 12px; text-transform: capitalize; }
+.dex-stat { margin: 13px 0; }
+.dex-stat > div { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.dex-stat span { font-family: var(--font-geist-mono), monospace; }
+.dex-stat meter { appearance: none; width: 100%; height: 6px; border: 0; background: #e5e5dc; }
+.dex-stat meter::-webkit-meter-bar { background: #e5e5dc; border: 0; border-radius: 0; }
+.dex-stat meter::-webkit-meter-optimum-value { background: var(--dex-accent); }
+.dex-stat meter::-moz-meter-bar { background: var(--dex-accent); }
+.dex-info > div { display: grid; grid-template-columns: 90px 1fr; gap: 15px; margin: 12px 0; font-size: 13px; line-height: 1.7; }
+.dex-info dt { color: var(--dex-muted); }.dex-info dd { text-transform: capitalize; }
+@media(max-width:700px) { .dex-detail-grid { grid-template-columns: 1fr; gap: 30px; }.dex-detail-artwork { min-height: 260px; }.dex-detail-artwork img { max-width: 260px; } }
