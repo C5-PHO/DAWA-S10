@@ -1,3 +1,4 @@
+import "./pokedex.css";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -14,19 +15,20 @@ interface PokemonLayoutProps {
 
 export default function PokemonLayout({ children }: PokemonLayoutProps) {
   return (
-    <div className="min-h-screen bg-linear-to-br from-slate-950 to-purple-900">
+    <div className="pokedex-shell">
       <nav
         aria-label="Navegación de la Pokédex"
-        className="sticky top-0 z-50 bg-black/30 backdrop-blur-sm"
+        className="pokedex-nav"
       >
-        <div className="mx-auto max-w-7xl px-4 py-4">
+        <div className="pokedex-nav-inner">
           <Link
             href="/pokemon"
-            className="inline-flex items-center gap-2 rounded text-2xl font-bold text-white transition-colors hover:text-purple-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-300"
+            className="pokedex-brand"
           >
             <IoGameController size={30} aria-hidden="true" />
-            Pokédex Next.js
+            Pokédex.
           </Link>
+          <span className="pokedex-nav-caption">ARCHIVO POKÉMON / KANTO</span>
         </div>
       </nav>
       {children}

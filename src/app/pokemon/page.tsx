@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { IoMdList } from "react-icons/io";
 import type { PokemonListResponse, SimplePokemon } from "@/types/pokemon";
 
 async function getPokemons(): Promise<SimplePokemon[]> {
@@ -22,33 +21,37 @@ export default async function PokemonList() {
   const pokemons = await getPokemons();
 
   return (
-    <main className="p-4 py-8 sm:p-8">
-      <div className="mx-auto max-w-6xl">
-        <h1 className="mb-12 flex items-center gap-3 text-3xl font-bold text-white drop-shadow-lg sm:text-4xl">
-          <IoMdList size={40} aria-hidden="true" />
-          Lista de Pokémon (ISR)
-        </h1>
+    <main className="pokedex-content">
+      <div className="pokedex-container">
+        <header className="pokedex-heading">
+          <div>
+            <p className="pokedex-eyebrow">PRIMERA GENERACIÓN · REGIÓN DE KANTO</p>
+            <h1>Un mundo por descubrir.</h1>
+            <p className="pokedex-intro">Explora los 151 Pokémon originales y descubre a cada uno de ellos.</p>
+          </div>
+          <span className="pokedex-count"><strong>151</strong> Pokémon registrados</span>
+        </header>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="pokedex-grid">
           {pokemons.map((pokemon) => (
             <Link
               key={pokemon.name}
               href={`/pokemon/${pokemon.name}`}
-              className="rounded-xl transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-300 motion-reduce:transform-none motion-reduce:transition-none"
+              className="pokedex-card"
             >
-              <div className="rounded-xl bg-white p-6 text-gray-700 shadow-lg hover:shadow-2xl">
+              <div className="pokedex-card-inner">
                 <Image
                   width={128}
                   height={128}
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
                   alt={pokemon.name}
-                  className="mx-auto h-32 w-32 object-contain"
+                  className="pokedex-artwork"
                   loading="lazy"
                 />
-                <h2 className="mt-4 text-center text-xl font-bold capitalize">
+                <h2 className="pokedex-name">
                   {pokemon.name}
                 </h2>
-                <p className="text-center text-gray-500">
+                <p className="pokedex-number">
                   #{pokemon.id.toString().padStart(3, "0")}
                 </p>
               </div>
