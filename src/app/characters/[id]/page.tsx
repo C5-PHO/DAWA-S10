@@ -32,11 +32,11 @@ export default async function CharacterDetail({ params }: Props) {
   const character = await getCharacter(id);
   if (!character) notFound();
   const [allEpisodes, origin, location] = await Promise.all([
-    getEpisodes(),
-    getLocation(character.origin.url),
-    getLocation(character.location.url),
+    getEpisodes().catch(() => null),
+    getLocation(character.origin.url).catch(() => null),
+    getLocation(character.location.url).catch(() => null),
   ]);
-  const episodes = allEpisodes.filter((episode) =>
+  const episodes = (allEpisodes ?? []).filter((episode) =>
     character.episode.includes(episode.url),
   );
   return (
@@ -146,6 +146,7 @@ export default async function CharacterDetail({ params }: Props) {
                 </dd>
               </div>
             </dl>
+            {((character.origin.url && !origin) || (character.location.url && !location)) && <p className="mt-5 text-sm text-stone-600">La información ampliada de ubicaciones no está disponible temporalmente. El origen y la ubicación del personaje siguen visibles arriba.</p>}
             {[
               ["Lugar de origen", origin],
               ["Ubicación actual", location],
@@ -174,7 +175,9 @@ export default async function CharacterDetail({ params }: Props) {
             <h2>Apariciones</h2>
             <span>{character.episode.length} episodios</span>
           </div>
+          <p className="mb-4 text-sm text-stone-600">{!allEpisodes ? "Los títulos de episodios no están disponibles temporalmente. Puedes consultar sus recursos originales." : ""}</p>
           <ul>
+            {!allEpisodes && character.episode.map(url => <li key={url}><a href={url} target="_blank" rel="noopener noreferrer">Episodio {url.split("/").at(-1)} ↗</a></li>)}
             {episodes.map((episode) => (
               <li key={episode.id}>
                 <a href={episode.url} target="_blank" rel="noopener noreferrer">
