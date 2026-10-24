@@ -11,7 +11,7 @@ export const TEN_DAYS = 864000;
 
 async function fetchWithRetry(url: string, options: RequestInit & { next?: { revalidate: number } }) {
   let failure: unknown;
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 5; attempt++) {
     try {
       // Un reintento debe consultar al proveedor, no reutilizar una respuesta fallida.
       const requestUrl = new URL(url);
@@ -23,12 +23,20 @@ async function fetchWithRetry(url: string, options: RequestInit & { next?: { rev
         throw new Error(`Rick and Morty API: HTTP ${response.status} en ${new URL(url).pathname}${new URL(url).search}.`);
       }
       failure = new Error(`El proveedor respondió HTTP ${response.status}.`);
-      if (attempt === 3) return response;
+      if (attempt === 4) return response;
+      if (response.status === 429) {
+        const retryAfter = response.headers.get("retry-after");
+        const seconds = retryAfter ? Number(retryAfter) : NaN;
+        const dateDelay = retryAfter ? Date.parse(retryAfter) - Date.now() : NaN;
+        const wait = Number.isFinite(seconds) ? seconds * 1000 : Number.isFinite(dateDelay) ? dateDelay : 15000 * (attempt + 1);
+        await new Promise(resolve => setTimeout(resolve, Math.max(1000, wait)));
+        continue;
+      }
     } catch (error) {
       failure = error;
       if (error instanceof Error && error.message.startsWith("Rick and Morty API: HTTP")) throw error;
     }
-    if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    if (attempt < 4) await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
   }
   throw failure instanceof Error ? failure : new Error("El proveedor no respondió.");
 }
@@ -47,14 +55,10 @@ export async function getCharacterPage(page = 1): Promise<CharacterResponse> {
 export const getAllCharacters = cache(async (): Promise<Character[]> => {
   const first = await getCharacterPage();
   const characters = [...first.results];
-  for (let start = 2; start <= first.info.pages; start += 4) {
-    const pages = await Promise.all(
-      Array.from(
-        { length: Math.min(4, first.info.pages - start + 1) },
-        (_, i) => getCharacterPage(start + i),
-      ),
-    );
-    pages.forEach((page) => characters.push(...page.results));
+  for (let page = 2; page <= first.info.pages; page++) {
+    // Evita ráfagas contra la API durante la generación de todas las rutas.
+    await new Promise(resolve => setTimeout(resolve, 600));
+    characters.push(...(await getCharacterPage(page)).results);
   }
   return characters;
 });
