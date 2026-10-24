@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import type {
   Character,
   CharacterResponse,
@@ -52,7 +53,7 @@ export async function getCharacterPage(page = 1): Promise<CharacterResponse> {
 }
 
 // Usa todas las páginas del proveedor, sin fijar manualmente el total de personajes.
-export const getAllCharacters = cache(async (): Promise<Character[]> => {
+export const getAllCharacters = cache(unstable_cache(async (): Promise<Character[]> => {
   const first = await getCharacterPage();
   const characters = [...first.results];
   for (let page = 2; page <= first.info.pages; page++) {
@@ -61,7 +62,7 @@ export const getAllCharacters = cache(async (): Promise<Character[]> => {
     characters.push(...(await getCharacterPage(page)).results);
   }
   return characters;
-});
+}, ["rick-morty-character-index"], { revalidate: TEN_DAYS }));
 
 export async function getCharacter(id: string): Promise<Character | null> {
   if (!/^[1-9]\d{0,6}$/.test(id)) return null;
