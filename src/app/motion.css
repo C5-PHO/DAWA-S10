@@ -1,0 +1,57 @@
+/* Movimiento compartido: ritmo editorial, sin alterar la geometría ni el scroll. */
+.archive-shell .character-image img,
+.pokedex-shell .pokedex-artwork {
+  transition: transform 600ms cubic-bezier(.22,1,.36,1);
+}
+@media(hover:hover) and (pointer:fine) {
+  .character-card:hover .character-image img { transform: scale(1.035); }
+  .pokedex-card:hover .pokedex-artwork { transform: translateY(-4px); }
+}
+.character-card,.pokedex-card {
+  transition: border-color 220ms ease, background-color 220ms ease;
+}
+.archive-nav a,.pokedex-nav a,.archive-clear,.dex-back,
+.archive-pagination button,.archive-button,.pokedex-button,.pokedex-button-secondary {
+  transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease;
+}
+.archive-filters input,.archive-filters select {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.archive-filters input:focus,.archive-filters select:focus {
+  border-color: #426044;
+  box-shadow: 0 2px 0 #426044;
+}
+.archive-episodes a { transition: color 180ms ease; }
+.archive-episodes a:hover { color: #426044; }
+.archive-hero h1,.pokedex-heading h1,.archive-detail>h1 { text-wrap: balance; }
+@media(prefers-reduced-motion:no-preference) {
+  .archive-nav,.pokedex-nav { animation: archive-fade 650ms ease both; }
+  .archive-hero .archive-eyebrow,.pokedex-heading .pokedex-eyebrow {
+    animation: archive-rise 650ms 60ms cubic-bezier(.22,1,.36,1) both;
+  }
+  .archive-hero h1,.pokedex-heading h1,.archive-detail>h1 {
+    animation: archive-title 850ms 100ms cubic-bezier(.22,1,.36,1) both;
+  }
+  .archive-intro,.pokedex-intro,.archive-total,.pokedex-count {
+    animation: archive-rise 750ms 230ms cubic-bezier(.22,1,.36,1) both;
+  }
+  .character-skeleton {
+    background: linear-gradient(105deg,#e5e9de 25%,#f0f2e9 45%,#e5e9de 65%);
+    background-size: 250% 100%;
+    animation: archive-loading 1700ms linear infinite;
+  }
+  .dex-stat meter { animation: archive-stat 800ms 150ms cubic-bezier(.22,1,.36,1) both; transform-origin:left; }
+}
+@keyframes archive-fade { from {opacity:0} to {opacity:1} }
+@keyframes archive-rise { from {opacity:0;transform:translateY(10px)} to {opacity:1;transform:translateY(0)} }
+@keyframes archive-title { from {opacity:0;transform:translateY(16px);clip-path:inset(0 0 18% 0)} to {opacity:1;transform:translateY(0);clip-path:inset(0)} }
+@keyframes archive-loading { to {background-position:-150% 0} }
+@keyframes archive-stat { from {transform:scaleX(0)} to {transform:scaleX(1)} }
+@media(prefers-reduced-motion:reduce) {
+  .archive-shell *, .pokedex-shell *,
+  .archive-shell *::before,.archive-shell *::after,
+  .pokedex-shell *::before,.pokedex-shell *::after {
+    animation:none!important;
+    transition:none!important;
+  }
+}

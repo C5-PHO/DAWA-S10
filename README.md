@@ -56,3 +56,7 @@ Para Vercel, importa `C5-PHO/DAWA-S10`, selecciona Next.js y deja la raíz del p
 
 - [Rick and Morty API](https://rickandmortyapi.com/documentation)
 - [generateStaticParams](https://nextjs.org/docs/app/api-reference/functions/generate-static-params)
+
+## Movimiento y accesibilidad
+
+`ProjectMotion.tsx` comparte las apariciones al entrar en pantalla entre el archivo de personajes y la Pokédex. Utiliza un observador por ruta, detecta resultados nuevos de búsqueda y libera observadores y animaciones al navegar. El contenido nunca depende de JavaScript para permanecer visible. `motion.css` define las entradas de títulos, estados de carga y transiciones de controles. Se respeta `prefers-reduced-motion`, incluido su cambio mientras la página está abierta. El desplazamiento y los enlaces conservan su comportamiento nativo.
