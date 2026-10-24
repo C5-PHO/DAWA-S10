@@ -13,6 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: { icon: "/icon.svg", shortcut: "/icon.svg" },
   title: "R/M Field Archive",
   description: "Explora personajes, lugares y episodios del universo Rick and Morty.",
 };
